@@ -8,7 +8,9 @@ This repo contains laboratory homeworks for the Introduction to Robotics course,
 Use a separat potentiometer in controlling each of thecolor of the RGB led (Red, Green and Blue). The control must be done with digital electronics(it must read the value of the potentiometer with Arduino, and write a mapped value to each of the pins connected to the led.
 
 ### Photos:
-![poza1](homework1/WhatsApp Image 2022-10-25 at 20.54.48.jpeg)
+![poza1](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework1/WhatsApp%20Image%202022-10-25%20at%2020.54.48.jpeg)
+![poza2](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework1/WhatsApp%20Image%202022-10-25%20at%2020.54.49%20(1).jpeg)
+![poza3](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework1/WhatsApp%20Image%202022-10-25%20at%2020.54.49.jpeg)
 
 ### Video:
 https://www.youtube.com/watch?v=XTkY4eXRiVw
@@ -31,7 +33,10 @@ State 4(initiated after state 3 ends):  red for cars, blinking blue(please imagi
 Pressing the button in any state other than state 1 should NOT yield any actions.
 
 ### Photos:
-https://imgur.com/a/rxVOya5
+![poza1](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur%20(1).jpg)
+![poza2](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur%20(2).jpg)
+![poza3](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur%20(3).jpg)
+![poza4](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur.jpg)
 
 ### Video:
 https://www.youtube.com/watch?v=N21eQ5cNmFc
@@ -50,6 +55,9 @@ Current position blinking. Can use the joystick to move from one position to nei
 2. State 2 (initiated after a button press in State 1): The current segment stops blinking, adopting the state of the segment before selection (ON or OFF). Toggling the X (or Y, you chose) axis should change the segment state from ON to OFF or from OFF to ON. Clicking the joystick should save the segment state and exit back to state 1.
 
 ### Photos:
+![poza1](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework3/WhatsApp%20Image%202022-11-06%20at%2016.27.07%20(1).jpeg)
+![poza2](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework3/WhatsApp%20Image%202022-11-06%20at%2016.27.07.jpeg)
+![poza3](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework3/WhatsApp%20Image%202022-11-06%20at%2016.27.08.jpeg)
 
 
 ### Video:
