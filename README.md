@@ -8,7 +8,7 @@ This repo contains laboratory homeworks for the Introduction to Robotics course,
 Use a separat potentiometer in controlling each of thecolor of the RGB led (Red, Green and Blue). The control must be done with digital electronics(it must read the value of the potentiometer with Arduino, and write a mapped value to each of the pins connected to the led.
 
 ### Photos:
-https://imgur.com/a/iaK2B8A
+![poza1](homework1/WhatsApp Image 2022-10-25 at 20.54.48.jpeg)
 
 ### Video:
 https://www.youtube.com/watch?v=XTkY4eXRiVw
@@ -35,3 +35,22 @@ https://imgur.com/a/rxVOya5
 
 ### Video:
 https://www.youtube.com/watch?v=N21eQ5cNmFc
+
+## Homework 3
+
+### Task:
+This will use the joystick to control the position of the segment and ”draw” on the display. The movement between segments should be natural (meaning they should jump from the current position only to neighbors, but without passing through ”walls”.
+
+The system has the following states:
+
+1. State 1 (default, but also initiated after a button press in State 2): 
+
+Current position blinking. Can use the joystick to move from one position to neighbors. Short pressing the button toggles state 2. Long pressing the button in state resets the entire display by turning all the segments OFF and moving the current position to the decimal point.
+
+2. State 2 (initiated after a button press in State 1): The current segment stops blinking, adopting the state of the segment before selection (ON or OFF). Toggling the X (or Y, you chose) axis should change the segment state from ON to OFF or from OFF to ON. Clicking the joystick should save the segment state and exit back to state 1.
+
+### Photos:
+
+
+### Video:
+https://youtu.be/gUyym5VYDh8
