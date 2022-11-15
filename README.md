@@ -62,3 +62,47 @@ Current position blinking. Can use the joystick to move from one position to nei
 
 ### Video:
 https://youtu.be/gUyym5VYDh8
+
+## Homework 2
+
+### Task:
+Building the traffic lights for a crosswalk.It will use 2 LEDs to represent the traffic lights for people (red and blue, because I don't have another green) and 3 LEDs to represent the traffic lights for cars (red, yellow and green).See the states it needs to go through.
+
+The system has the following states:
+
+State 1(default, reinstated after state 4 ends): green light for cars, red light for people, no sounds. Duration: indefinite, changed by pressing the button.
+
+State 2(initiated by counting down 8 seconds after a button press): the light should be yellow for cars, red for people and no sounds. Duration: 3 seconds.
+
+State 3(initiated after state 2 ends): red for cars, blue(I really need to find a green LED) for people and a beeping sound from the buzzer at a constant interval. Duration: 8 seconds.
+
+State 4(initiated after state 3 ends):  red for cars, blinking blue(please imagine is green) for people and a beeping sound from the buzzer, at a constant interval,  faster than the beeping in state 3. This state should last 4 seconds.
+
+Pressing the button in any state other than state 1 should NOT yield any actions.
+
+### Photos:
+![poza1](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur%20(1).jpg)
+![poza2](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur%20(2).jpg)
+![poza3](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur%20(3).jpg)
+![poza4](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework2/Homework%202%20-%20Imgur.jpg)
+
+### Video:
+https://www.youtube.com/watch?v=N21eQ5cNmFc
+
+## Homework 4
+
+### Task:
+Use the joystick to move through the 4 digit 7 segment displays digits, press the button to lock in on the current digit and use the other axis to increment or decrement the number. Keep the button pressed to reset all the digit values and the current position to the first digit in the first state. The system has the following states:
+
+1.First state: Use a joystick axis to cycle through the 4 digits; using the other axis does nothing. A blinking decimal point shows the current digit position. When pressing the button, locks in on the selected digit and enter the second state.
+
+2.Second state: In this state, the decimal point stays always on, no longer blinking and no longer can use the axis to cycle through the 4 digits. Instead, using the other  axis,  you  can  increment or decrement  the  number  on  the  current  digit  IN  HEX. Pressing the button again returns to the previous state.
+
+### Photos:
+![poza1](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework4/1.jpg)
+![poza2](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework4/2.jpg)
+![poza3](https://github.com/SolomonFlavius/IntroductionToRobotics/blob/main/homework4/3.jpg)
+
+
+### Video:
+https://www.youtube.com/shorts/oLV0Uxn-Poo
