@@ -106,3 +106,6 @@ Use the joystick to move through the 4 digit 7 segment displays digits, press th
 
 ### Video:
 https://www.youtube.com/shorts/oLV0Uxn-Poo
+
+## Matrix Project(in progress) - Snake
+Will be updated with full project
