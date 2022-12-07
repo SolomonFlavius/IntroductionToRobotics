@@ -19,7 +19,7 @@ byte highscorePosMax = 5;
 bool inSound = false;
 bool inBLCD = false;
 bool inBMatrix = false;
-
+short score = 0;
 
 byte aboutSlide = 0;
 
@@ -53,6 +53,7 @@ void setup() {
   JoystickSetup();
   MatrixSetup();
   LCDSetup();
+  score = 0;
   Serial.begin(9600);
 }
 
@@ -149,7 +150,7 @@ void SetLCDBrightness(int brightness) {
 }
 
 void SetMatrixBrightness(int brightness) {
-  lc.setIntensity(0, map(brightness,minBrightnessValue,maxBrightnessValue,minBrightnessValueRaw,maxBrightnessValueRaw+10));
+  lc.setIntensity(0, map(brightness,minBrightnessValue,maxBrightnessValue,minBrightnessValueRaw,maxBrightnessValue+10));
 }
 
 void StartWritingName() {
@@ -354,6 +355,8 @@ int ry = 3 ;
 
 void GenerateRandomFood() {
   if(matrix[xPos][yPos] == 2) {
+      score += 1;
+      WriteGameScreen();
       rx=random(0,8);
       ry=random(0,8);
       Serial.println(rx);
@@ -428,11 +431,19 @@ void ShowAbout() {
   }
 }
 
+void WriteGameScreen() {
+  ClearLCD();
+  lcd.print("Score:");
+  lcd.print(score);
+
+}
+
 void JoystickClicked() {
   if (inMenu == true) {//0-start 1-highscore 2-settings 3-about 4-how to play
     inMenu = false;
     if (menuOption == 0) {
       inGame = true;
+      WriteGameScreen();
     }
     if (menuOption == 1) {
       inHighscore = true;
