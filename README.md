@@ -109,3 +109,6 @@ https://www.youtube.com/shorts/oLV0Uxn-Poo
 
 ## Matrix Project(in progress) - Snake
 Will be updated with full project
+
+### Video of the working menu and demo for the game:
+https://youtu.be/g9ne16XUf8A
