@@ -5,14 +5,16 @@
 bool inGame = false;
 bool inMenu = true;
 bool inSettings = false;
-byte settingsOption = 0;//name, brightness lcd, brightness matrix, sound, exit
-byte settingsOptionsMax = 4;
+byte settingsOption = 0;//name,difficulty, brightness lcd, brightness matrix, sound, exit
+byte settingsOptionsMax = 5;
+bool inDifficulty = false;
 bool inName = false;
 bool inExit = false;
 bool inHighscore = false;
 byte highscorePos = 1;
 bool inAbout = false;
 bool inHowToPlay = false;
+bool inGameOver = false;
 byte menuOption = 0;//0-start 1-highscore 2-settings 3-about 4-how to play
 byte menuOptionsMax = 4;
 byte highscorePosMax = 5;
@@ -20,6 +22,71 @@ bool inSound = false;
 bool inBLCD = false;
 bool inBMatrix = false;
 short score = 0;
+short difficulty = 1;
+short minDifficulty = 1;
+short maxDifficulty = 3;
+short direction = 0;//0 left 1 up 2 right 3 down
+short snakeRow[64];
+short snakeHeight[64];
+short snakeLength = 1;
+int speed = 200;
+int timeLeft;
+
+byte arrowUp[8] = {
+  0b00000,
+  0b00000,
+  0b00100,
+  0b01010,
+  0b10001,
+  0b00000,
+  0b00000,
+  0b00000
+};
+
+byte arrowDown[8] = {
+	0b00000,
+	0b00000,
+	0b00000,
+	0b10001,
+	0b01010,
+	0b00100,
+	0b00000,
+	0b00000
+};
+
+byte arrowRight[8] = {
+  B00000,
+  B00100,
+  B00010,
+  B11111,
+  B00010,
+  B00100,
+  B00000,
+  B00000
+};
+
+// arrow left
+byte arrowLeft[8] = {
+  B00000,
+  B00100,
+  B01000,
+  B11111,
+  B01000,
+  B00100,
+  B00000,
+  B00000
+};
+//full square
+byte squareCharacter[8] = {
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111
+};
 
 byte aboutSlide = 0;
 
@@ -32,6 +99,16 @@ char hName2[16];
 char hName3[16];
 char hName4[16];
 char hName5[16];
+short hScore1;
+short hScore2;
+short hScore3;
+short hScore4;
+short hScore5;
+short difficulty1;
+short difficulty2;
+short difficulty3;
+short difficulty4;
+short difficulty5;
 
 void ReadFromEEPROM() {
   lcdBrightness = EEPROM.read(0);
@@ -44,7 +121,18 @@ void ReadFromEEPROM() {
     hName4[i] = EEPROM.read(51+i);
     hName5[i] = EEPROM.read(67+i);
   }
+  hScore1 = EEPROM.read(83);
+  hScore2 = EEPROM.read(85);
+  hScore3 = EEPROM.read(87);
+  hScore4 = EEPROM.read(89);
+  hScore5 = EEPROM.read(91);
+  difficulty1 = EEPROM.read(93);
+  difficulty2 = EEPROM.read(95);
+  difficulty3 = EEPROM.read(97);
+  difficulty4 = EEPROM.read(99);
+  difficulty5 = EEPROM.read(101);
 }
+
 
 
 void setup() {
@@ -54,6 +142,7 @@ void setup() {
   MatrixSetup();
   LCDSetup();
   score = 0;
+  CharactersSetup();
   Serial.begin(9600);
 }
 
@@ -137,6 +226,16 @@ short alphabetLength = 26;
 short name[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 short letterPos = 0;
 
+void CharactersSetup() {
+  //arrows -> 1 up 2 down 3 left 4 right
+  lcd.createChar(0,squareCharacter);
+  lcd.createChar(1,arrowUp);
+  lcd.createChar(2,arrowDown);
+  lcd.createChar(3,arrowLeft);
+  lcd.createChar(4,arrowRight);
+  
+}
+
 void LCDSetup() {
   ClearLCD();
   lcd.begin(lcdCols, lcdRows);
@@ -154,6 +253,11 @@ void SetMatrixBrightness(int brightness) {
 }
 
 void StartWritingName() {
+  lcd.setCursor(12,0);
+  lcd.write(1);
+  lcd.write(2);
+  lcd.write(3);
+  lcd.write(4);
   letterPos = 0;
   lcd.setCursor(letterPos, 1);
 }
@@ -161,19 +265,27 @@ void StartWritingName() {
 void ShowMenuOption() {
   ClearLCD();
   if (menuOption == 0) {
-    lcd.print("Start game");
+    lcd.print("Start game     ");
+    lcd.write(2);
   }
   if (menuOption == 1) {
-    lcd.print("Highscore");
+    lcd.print("Highscore     ");
+    lcd.write(1);
+    lcd.write(2);
   }
   if (menuOption == 2) {
-    lcd.print("Settings");
+    lcd.print("Settings      ");
+    lcd.write(1);
+    lcd.write(2);
   }
   if (menuOption == 3) {
-    lcd.print("About");
+    lcd.print("About         ");
+    lcd.write(1);
+    lcd.write(2);
   }
   if (menuOption == 4) {
-    lcd.print("How to play");
+    lcd.print("How to play    ");
+    lcd.write(1);
   }
 }
 
@@ -183,17 +295,32 @@ void ShowSettingsOption() {
     WriteName();
   }
   if (settingsOption == 1) {
-    WriteLCDBrightnessScreen();
+    WriteDifficultyScreen();
   }
   if (settingsOption == 2) {
-    WriteMatrixBrightnessScreen();
+    WriteLCDBrightnessScreen();
   }
   if (settingsOption == 3) {
-    WriteSound();
+    WriteMatrixBrightnessScreen();
   }
   if (settingsOption == 4) {
+    WriteSound();
+  }
+  if (settingsOption == 5) {
     WriteExit();
   }
+}
+
+void WriteDifficultyScreen() {
+  ClearLCD();
+  lcd.write("Difficulty");
+  if(inDifficulty == true) {
+    lcd.setCursor(14,1);
+    lcd.write(3);
+    lcd.write(4);
+  }
+  lcd.setCursor(0,1);
+  lcd.print(difficulty);
 }
 
 void WriteExit() {
@@ -228,11 +355,39 @@ void WriteHighscorePos(int pos) {
       lcd.print(hName5[i]);
     }
   }
+  if (pos == 1) {
+    lcd.setCursor(15,0);
+    lcd.write(2);
+  }
+  if (pos == 2) {
+    lcd.setCursor(14,0);
+    lcd.write(1);
+    lcd.write(2);
+  }
+  if (pos == 3) {
+    lcd.setCursor(14,0);
+    lcd.write(1);
+    lcd.write(2);
+  }
+  if (pos == 4) {
+    lcd.setCursor(14,0);
+    lcd.write(1);
+    lcd.write(2);
+  }
+  if (pos == 5) {
+    lcd.setCursor(15,0);
+    lcd.write(1);
+  }
 }
 
 void WriteSound() {
   ClearLCD();
   lcd.write("ON/OFF sound");
+  if(inSound == true) {
+    lcd.setCursor(14,1);
+    lcd.write(3);
+    lcd.write(4);
+  }
   lcd.setCursor(0, 1);
   if(soundOn == true) {
     lcd.print("ON");
@@ -325,27 +480,6 @@ void JoystickMovementHandler() {
         joyMoved = true;
         JoystickLeft();
       }
-  if (millis() - lastMoved > moveInterval){   
-    if (xValue > maxThreshold) { // in sus
-      joyMoved = true;
-      JoystickUpGame();
-    }
-    if (xValue < minThreshold)  { //in jos
-      joyMoved = true;
-      JoystickDownGame();
-      }
-      if (yValue > maxThreshold) { // in dreapta
-        joyMoved = true;
-        JoystickRightGame();
-      } 
-  if (yValue < minThreshold)  { //in stanga
-        joyMoved = true;
-        JoystickLeftGame();
-      }
-    
-    lastMoved = millis();
-
-  } 
         
   lastJoyReading = joyReading;
 }
@@ -355,55 +489,33 @@ int ry = 3 ;
 
 void GenerateRandomFood() {
   if(matrix[xPos][yPos] == 2) {
+      snakeLength += 1;
       score += 1;
+      timeLeft = MaxTimeLeft();
+      speed -= 10;
       WriteGameScreen();
       rx=random(0,8);
       ry=random(0,8);
-      Serial.println(rx);
       while(matrix[rx][ry] == 1) {
         rx=random(0,8);
         ry=random(0,8);
       }
       matrix[rx][ry] = 2;
     }
-}
-void JoystickUpGame() {
-  if (inGame == true) {
-    matrix[xPos][yPos] = 0;
-    matrixChanged = true;
-    GameMoveUp();
-    
-    matrix[xPos][yPos] = 1;
+  else {
+      matrix[snakeRow[snakeLength]][snakeHeight[snakeLength]] = 0;
   }
 }
 
-void JoystickDownGame() {
-  if (inGame == true) {
-    matrix[xPos][yPos] = 0;
-    matrixChanged = true;
-    GameMoveDown();
-    
-    matrix[xPos][yPos] = 1;
+int MaxTimeLeft() {
+  if(difficulty == 1) {
+    return 9;
   }
-}
-
-void JoystickRightGame() {
-  if (inGame == true) {
-    matrix[xPos][yPos] = 0;
-    matrixChanged = true;
-    GameMoveRight();
-    
-    matrix[xPos][yPos] = 1;
+  if(difficulty == 2) {
+    return 7;
   }
-}
-
-void JoystickLeftGame() {
-  if (inGame == true) {
-    matrix[xPos][yPos] = 0;
-    matrixChanged = true;
-    GameMoveLeft();
-    
-    matrix[xPos][yPos] = 1;
+  if(difficulty == 3) {
+    return 5;
   }
 }
 
@@ -411,21 +523,25 @@ void ShowAbout() {
   if(aboutSlide == 0) {
     ClearLCD();
     lcd.setCursor(0, 0);
-    lcd.print("Game name");
+    lcd.print("Game name      ");
+    lcd.write(4);
     lcd.setCursor(0, 1);
     lcd.print("Snake");
   }
   else if(aboutSlide == 1) {
     ClearLCD();
     lcd.setCursor(0, 0);
-    lcd.print("Author");
+    lcd.print("Author        ");
+    lcd.write(3);
+    lcd.write(4);
     lcd.setCursor(0, 1);
     lcd.print("Solomon Flavius");
   }
   else {
     ClearLCD();
     lcd.setCursor(0, 0);
-    lcd.print("Github name");
+    lcd.print("Github name    ");
+    lcd.write(3);
     lcd.setCursor(0, 1);
     lcd.print("SolomonFlavius");
   }
@@ -435,7 +551,8 @@ void WriteGameScreen() {
   ClearLCD();
   lcd.print("Score:");
   lcd.print(score);
-
+  lcd.setCursor(0,1);
+  lcd.print("Time left:");
 }
 
 void JoystickClicked() {
@@ -443,6 +560,10 @@ void JoystickClicked() {
     inMenu = false;
     if (menuOption == 0) {
       inGame = true;
+      snakeLength = 1;
+      timeLeft = MaxTimeLeft();
+      snakeRow[1] = 0;
+      snakeHeight[1] = 0;
       WriteGameScreen();
     }
     if (menuOption == 1) {
@@ -477,17 +598,23 @@ void JoystickClicked() {
       StartWritingName();
     }
     if  (settingsOption == 1){
-      inBLCD = true;
-      WriteLCDBrightnessScreen();
+      inDifficulty = true;
+      WriteDifficultyScreen();
     }
     if  (settingsOption == 2){
+      inBLCD = true;
+      WriteLCDBrightnessScreen();
+      
+    }
+    if  (settingsOption == 3){
       inBMatrix = true;
       WriteMatrixBrightnessScreen();
     }
-    if  (settingsOption == 3){
-      inSound = true;
-    }
     if  (settingsOption == 4){
+      inSound = true;
+      WriteSound();
+    }
+    if  (settingsOption == 5){
       inMenu = true;
       ShowMenuOption();
     }
@@ -512,6 +639,7 @@ void JoystickClicked() {
   else if (inSound == true) {
     inSound = false;
     inSettings = true;
+    WriteSound();
     EEPROM.update(2,soundOn);
   }
   else if(inAbout == true) {
@@ -522,6 +650,17 @@ void JoystickClicked() {
   else if(inHowToPlay == true) {
     inHowToPlay = false;
     inMenu = true;
+    ShowMenuOption();
+  }
+  else if(inDifficulty == true) {
+    inDifficulty = false;
+    inSettings = true;
+    WriteDifficultyScreen();
+  }
+  else if(inGameOver == true) {
+    inGameOver = false;
+    inMenu = true;
+    menuOption = 0;
     ShowMenuOption();
   }
 }
@@ -562,6 +701,9 @@ void JoystickUp() {
       name[letterPos] += 1;
     }
   }
+  if (inGame == true) {
+    direction = 1;
+  }
 }
 
 void JoystickDown() {
@@ -599,6 +741,9 @@ void JoystickDown() {
     else {
       name[letterPos] -= 1;
     }
+  }
+  if (inGame == true) {
+    direction = 3;
   }
 }
 
@@ -646,11 +791,29 @@ void JoystickLeft() {
       ShowAbout();
     }
   }
+  if (inDifficulty == true) {
+    if (difficulty == minDifficulty) {
+      difficulty = minDifficulty;
+    }
+    else {
+      difficulty -= 1;
+      WriteDifficultyScreen();
+    }
+    
+  }
+  if (inGame == true) {
+    direction = 0;
+  }
 }
 
 void WriteLCDBrightnessScreen() {
   ClearLCD();
   lcd.print("LCD Brightness");
+  if(inBLCD == true) {
+    lcd.setCursor(14,1);
+    lcd.write(3);
+    lcd.write(4);
+  }
   lcd.setCursor(0, 1);
   lcd.print("1");
   for(int i=minBrightnessValue;i<=maxBrightnessValue;i++) {
@@ -667,6 +830,11 @@ void WriteLCDBrightnessScreen() {
 void WriteMatrixBrightnessScreen() {
   ClearLCD();
   lcd.print("Matrix Brightness");
+  if(inBMatrix == true) {
+    lcd.setCursor(14,1);
+    lcd.write(3);
+    lcd.write(4);
+  }
   lcd.setCursor(0, 1);
   lcd.print("1");
   for(int i=minBrightnessValue;i<=maxBrightnessValue;i++) {
@@ -751,6 +919,19 @@ void JoystickRight() {
       ShowAbout();
     }
   }
+  if (inDifficulty == true) {
+    if (difficulty == maxDifficulty) {
+      difficulty = maxDifficulty;
+    }
+    else {
+      difficulty += 1;
+      WriteDifficultyScreen();
+    }
+    
+  }
+  if (inGame == true) {
+    direction = 2;
+  }
 }
 
 
@@ -760,14 +941,19 @@ void MatrixSetup() {
   SetMatrixBrightness(matrixBrightness);
   lc.clearDisplay(0);// clear screen
   matrix[xPos][yPos] = 1;
-  rx = 3;
-  ry = 3;
+  rx = random(0,8);
+  ry = random(0,8);
   matrix[rx][ry] = 2;
 }
 
 long lastBlink = 0;
 int blinkTime = 200;
 bool isShown = true;
+long lastLCDTime = 0;
+int oneSecond = 1000;
+
+long lastTimeMove = 0;
+
 
 void MatrixLoop() {
   if (inGame == true) {
@@ -782,12 +968,39 @@ void MatrixLoop() {
       lc.setLed(0,rx,ry,isShown);
       lastBlink = millis();
     }
+    if(millis() - lastTimeMove > speed)
+    {
+      if (direction == 0) {
+        GameMoveLeft();
+      }
+      if (direction == 1) {
+        GameMoveUp();
+      }
+      if (direction == 2) {
+        GameMoveRight();
+      }
+      if (direction == 3) {
+        GameMoveDown();
+      }
+      lastTimeMove = millis();
+    }
+    if(millis() - lastLCDTime > oneSecond)
+    {
+      timeLeft -= 1;
+      UpdateLCDTime();
+      lastLCDTime = millis();
+    }
     if (matrixChanged = true) {
       // matrix display logic
       UpdateMatrix();
       matrixChanged = false;
     }
   }
+}
+
+void UpdateLCDTime() {
+  lcd.setCursor(10,1);
+  lcd.print(timeLeft);
 }
 
 void UpdateMatrix() {
@@ -801,26 +1014,52 @@ void UpdateMatrix() {
 }
 
 void GameMoveUp() {
+  matrixChanged = true;
   if (xPos > 0) {
       xPos--;
     }
     else {
       xPos = matrixSize - 1;
     }
-  GenerateRandomFood();
+  GameOver();
+  if (inGame == true) {
+    GenerateRandomFood();
+    for(int i=snakeLength;i>=2;i--) {
+      snakeRow[i] = snakeRow[i-1];
+      snakeHeight[i] = snakeHeight[i-1];
+      matrix[snakeRow[i]][snakeHeight[i]] = 1;
+    }
+    matrix[xPos][yPos] = 1;
+    snakeRow[1] = xPos;
+    snakeHeight[1] = yPos; 
+    }
+   
 }
 
 void GameMoveDown() {
+  matrixChanged = true;
   if (xPos < matrixSize - 1) {
       xPos++;
     } 
     else {
       xPos = 0;
     }
+    GameOver();
+    if (inGame == true) {
     GenerateRandomFood();
+    for(int i=snakeLength;i>=2;i--) {
+      snakeRow[i] = snakeRow[i-1];
+      snakeHeight[i] = snakeHeight[i-1];
+      matrix[snakeRow[i]][snakeHeight[i]] = 1;
+    }
+    matrix[xPos][yPos] = 1;
+    snakeRow[1] = xPos;
+    snakeHeight[1] = yPos; 
+    }
 }
 
 void GameMoveLeft() {
+  matrixChanged = true;
   
     if (yPos > 0) {
       yPos--;
@@ -828,10 +1067,22 @@ void GameMoveLeft() {
     else {
       yPos = matrixSize - 1;
     }
+    GameOver();
+    if (inGame == true) {
     GenerateRandomFood();
+    for(int i=snakeLength;i>=2;i--) {
+      snakeRow[i] = snakeRow[i-1];
+      snakeHeight[i] = snakeHeight[i-1];
+      matrix[snakeRow[i]][snakeHeight[i]] = 1;
+    }
+    matrix[xPos][yPos] = 1;
+    snakeRow[1] = xPos;
+    snakeHeight[1] = yPos; 
+    }
 }
 
 void GameMoveRight() {
+  matrixChanged = true;
   
     if (yPos < matrixSize - 1) {
       yPos++;
@@ -839,5 +1090,41 @@ void GameMoveRight() {
     else {
       yPos = 0;
     }
+    GameOver();
+    if (inGame == true) {
     GenerateRandomFood();
+    for(int i=snakeLength;i>=2;i--) {
+      snakeRow[i] = snakeRow[i-1];
+      snakeHeight[i] = snakeHeight[i-1];
+      matrix[snakeRow[i]][snakeHeight[i]] = 1;
+    }
+    matrix[xPos][yPos] = 1;
+    snakeRow[1] = xPos;
+    snakeHeight[1] = yPos; 
+    }
+}
+
+void GameOver() {
+  if(matrix[xPos][yPos] == 1 || timeLeft <= 0) {
+    inGame = false;
+    ClearLCD();
+    lcd.print("Game over");
+    lcd.setCursor(0,1);
+    lcd.print("Score:");
+    lcd.print(score);
+    score = 0;
+    inGameOver = true;
+    snakeLength = 0;
+    for(int i = 1;i<=64;i++) {
+      snakeRow[i] = 0;
+      snakeHeight[i] = 0;
+    }
+    for(int i = 0;i<8;i++) {
+      for(int j = 0;j<8;j++) {
+        matrix[i][j] = 0;
+      }
+    }
+    UpdateMatrix();
+    lc.clearDisplay(0);
+  }
 }
